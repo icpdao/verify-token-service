@@ -23,8 +23,8 @@ provider:
     name: icpdao.9527.${self:provider.region}.deploys
 
 functions:
-  verify-token:
-    handler: verify-token.handler
+  verify_token:
+    handler: verify_token.handler
 
 custom:
   pythonRequirements:
