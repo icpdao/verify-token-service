@@ -1,0 +1,39 @@
+org: icpdao
+app: icpdao
+service: verify-token-service
+
+disabledDeprecations:
+  - CLI_OPTIONS_SCHEMA
+
+useDotenv: true
+
+provider:
+  name: aws
+  runtime: python3.8
+  lambdaHashingVersion: 20201221
+  environment:
+    ICPDAO_JWT_RSA_PUBLIC_KEY: ${env:ICPDAO_JWT_RSA_PUBLIC_KEY}
+  region: us-east-1
+  stage: prod
+  stackName: icpdao-verify-token-service
+  apiName: icpdao-verify-token-service
+  memorySize: 128
+  timeout: 30
+  deploymentBucket:
+    name: icpdao.9527.${self:provider.region}.deploys
+
+functions:
+  verify-token:
+    handler: verify-token.handler
+
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux
+
+plugins:
+  - serverless-python-requirements
+
+package:
+  patterns:
+    - '!node_modules/**'
+    - '!package-lock.json'
