@@ -12,7 +12,7 @@ os.environ['ICPDAO_JWT_RSA_PUBLIC_KEY'] = public_key
 from verify_token import handler
 
 class TestApp():
-    def test_app(self):
+    def test_1(self):
         payload = {
             "user_id": "mockid"
         }
@@ -27,5 +27,32 @@ class TestApp():
         }, None)
 
         assert res['context']['user_id'] == 'mockid'
+        assert res['policyDocument']['Statement'][0]['Effect'] == 'Allow'
+        assert res['policyDocument']['Statement'][0]['Resource'][0] == 'arn:aws:execute-api:4:5:6/7/*/*'
+
+    def test_2(self):
+        payload = {
+            "user_id": None
+        }
+        token = encode_RS256(payload, private_key)
+
+        content = decode_RS256(token, public_key)
+        assert content['user_id'] == None
+
+        res = handler({
+            'authorizationToken': token,
+            'methodArn': 'arn:aws:execute-api:4:5:6/7'
+        }, None)
+
+        assert res['context']['user_id'] == None
+        assert res['policyDocument']['Statement'][0]['Effect'] == 'Allow'
+        assert res['policyDocument']['Statement'][0]['Resource'][0] == 'arn:aws:execute-api:4:5:6/7/*/*'
+
+        res = handler({
+            'authorizationToken': "1",
+            'methodArn': 'arn:aws:execute-api:4:5:6/7'
+        }, None)
+
+        assert res['context']['user_id'] == None
         assert res['policyDocument']['Statement'][0]['Effect'] == 'Allow'
         assert res['policyDocument']['Statement'][0]['Resource'][0] == 'arn:aws:execute-api:4:5:6/7/*/*'

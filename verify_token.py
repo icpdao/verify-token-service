@@ -13,7 +13,9 @@ def handler(event, context):
         payload = decode_RS256(token, ICPDAO_JWT_RSA_PUBLIC_KEY)
         principalId = payload['user_id']
     except:
-      raise Exception('Unauthorized')  
+        # raise Exception('Unauthorized')
+        payload = {'user_id': None}
+        principalId = payload['user_id']
 
     tmp = methodArn.split(':')
     apiGatewayArnTmp = tmp[5].split('/')
